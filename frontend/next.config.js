@@ -39,7 +39,10 @@ const nextConfig = {
   reactStrictMode: true,
   // Emits .next/standalone: a minimal server.js plus only the node_modules it
   // actually imports, so the container does not need the full dependency tree.
-  output: "standalone"
+  output: "standalone",
+  // This app is its own root. Without this, Next sees the repo-root lockfile,
+  // treats the repo as the workspace root, and nests the standalone output.
+  outputFileTracingRoot: __dirname
 };
 
 module.exports = nextConfig;

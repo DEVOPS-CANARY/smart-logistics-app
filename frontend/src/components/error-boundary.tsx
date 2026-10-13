@@ -48,6 +48,9 @@ export default class ErrorBoundary extends Component<Props, State> {
             >
               Try again
             </button>
+            {/* A full page load on purpose: after a crash it discards the
+                broken client state, which client-side <Link> navigation keeps. */}
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
             <a
               href="/"
               className="rounded-lg border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50"

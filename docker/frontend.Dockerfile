@@ -27,6 +27,13 @@ RUN npm run build
 
 # --- runtime ------------------------------------------------------------------
 FROM ${NODE_IMAGE} AS runtime
+# The runtime never installs packages, so drop the package managers that ship
+# with the base image: less to patch (Trivy flags npm's own bundled deps) and
+# nothing for an attacker to install tools with.
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+    /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack \
+    /opt/yarn-* /usr/local/bin/yarn /usr/local/bin/yarnpkg
+
 WORKDIR /app
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
@@ -42,11 +49,14 @@ COPY --from=build /app/.next/static ./.next/static
 
 # Code stays root-owned and read-only for the app user. Only Next's cache dir
 # is writable (mount an emptyDir here when readOnlyRootFilesystem is on).
-RUN mkdir -p .next/cache && chown node:node .next/cache
+RUN mkdir -p .next/cache && chown 1000:1000 .next/cache
+
 # Links the image to its repo in GHCR (visibility, permissions, README).
 LABEL org.opencontainers.image.source="https://github.com/princebabou/k8s-devops-lab"
 
-USER node
+# Numeric UID:GID (the image's `node` user) lets Kubernetes' runAsNonRoot
+# verify the user is not root.
+USER 1000:1000
 
 EXPOSE 3000
 # exec form: node is PID 1 and receives SIGTERM directly.
