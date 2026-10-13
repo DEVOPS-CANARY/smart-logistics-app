@@ -34,6 +34,13 @@ RUN --mount=type=cache,target=/root/.npm npm ci --omit=dev
 
 # --- runtime --------------------------------------------------------------------
 FROM base AS runtime
+# The runtime never installs packages, so drop the package managers that ship
+# with the base image: less to patch (Trivy flags npm's own bundled deps) and
+# nothing for an attacker to install tools with.
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+    /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack \
+    /opt/yarn-* /usr/local/bin/yarn /usr/local/bin/yarnpkg
+
 ENV NODE_ENV=production \
     PORT=3001
 
