@@ -28,8 +28,10 @@ services:
     build:
       context: ./frontend
       dockerfile: ../docker/frontend.Dockerfile
-    environment:
-      NEXT_PUBLIC_API_BASE_URL: http://localhost:3001
+      # Compose has no Ingress to route /api, so point the browser straight at
+      # the backend. This is a build arg, not runtime env: Next inlines it.
+      args:
+        NEXT_PUBLIC_API_BASE_URL: http://localhost:3001
     ports:
       - "3000:3000"
     depends_on:

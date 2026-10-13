@@ -1,0 +1,9 @@
+# Applies to builds using docker/backend.Dockerfile (BuildKit).
+# Paths are relative to the build context: ./backend
+node_modules
+dist
+coverage
+.env
+.env.*
+*.log
+.git

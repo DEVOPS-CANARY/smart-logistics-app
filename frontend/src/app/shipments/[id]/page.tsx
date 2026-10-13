@@ -13,6 +13,7 @@ import {
   Shipment
 } from "../../../lib/api";
 import { redirectToLoginIfUnauthorized } from "../../../lib/route-guards";
+import { socketTarget } from "../../../lib/api-base";
 import ShipmentSummaryCard from "../../../components/tracking/shipment-summary-card";
 import ShipmentProgressCard from "../../../components/tracking/shipment-progress-card";
 import TrackingHero from "../../../components/tracking/tracking-hero";
@@ -58,14 +59,9 @@ export default function ShipmentTrackingPage() {
       });
 
     const token = localStorage.getItem("access_token");
-    const socket = io(
-      process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3001",
-      {
-        auth: {
-          token
-        }
-      }
-    );
+    const { url, path } = socketTarget();
+    const socketOptions = { path, auth: { token } };
+    const socket = url ? io(url, socketOptions) : io(socketOptions);
 
     const handleShipmentUpdate = (payload: ShipmentUpdate) => {
       setLastEvent(payload);

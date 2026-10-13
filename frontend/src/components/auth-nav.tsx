@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useToast } from "./toast-provider";
+import { API_BASE_URL } from "../lib/api-base";
 
 export default function AuthNav() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -33,9 +34,7 @@ export default function AuthNav() {
 
     const refreshToken = localStorage.getItem("refresh_token");
     if (refreshToken) {
-      const apiBase =
-        process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3001";
-      fetch(`${apiBase}/auth/logout`, {
+      fetch(`${API_BASE_URL}/auth/logout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ refresh_token: refreshToken })

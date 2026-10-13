@@ -36,7 +36,10 @@ loadRootEnv();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true
+  reactStrictMode: true,
+  // Emits .next/standalone: a minimal server.js plus only the node_modules it
+  // actually imports, so the container does not need the full dependency tree.
+  output: "standalone"
 };
 
 module.exports = nextConfig;
