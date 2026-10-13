@@ -42,11 +42,14 @@ COPY --from=build /app/.next/static ./.next/static
 
 # Code stays root-owned and read-only for the app user. Only Next's cache dir
 # is writable (mount an emptyDir here when readOnlyRootFilesystem is on).
-RUN mkdir -p .next/cache && chown node:node .next/cache
+RUN mkdir -p .next/cache && chown 1000:1000 .next/cache
+
 # Links the image to its repo in GHCR (visibility, permissions, README).
 LABEL org.opencontainers.image.source="https://github.com/princebabou/k8s-devops-lab"
 
-USER node
+# Numeric UID:GID (the image's `node` user) lets Kubernetes' runAsNonRoot
+# verify the user is not root.
+USER 1000:1000
 
 EXPOSE 3000
 # exec form: node is PID 1 and receives SIGTERM directly.

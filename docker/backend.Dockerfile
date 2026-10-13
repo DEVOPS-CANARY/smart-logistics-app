@@ -51,8 +51,9 @@ COPY package.json ./
 LABEL org.opencontainers.image.source="https://github.com/princebabou/k8s-devops-lab"
 
 # Files stay owned by root and are only readable by the app user, so a
-# compromised process cannot rewrite its own code.
-USER node
+# compromised process cannot rewrite its own code. Numeric UID:GID (the image's
+# `node` user) lets Kubernetes' runAsNonRoot verify the user is not root.
+USER 1000:1000
 
 EXPOSE 3001
 # exec form: node is PID 1 and receives SIGTERM directly -> enableShutdownHooks()
