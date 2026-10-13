@@ -34,6 +34,13 @@ RUN --mount=type=cache,target=/root/.npm npm ci --omit=dev
 
 # --- runtime --------------------------------------------------------------------
 FROM base AS runtime
+# The runtime never installs packages, so drop the package managers that ship
+# with the base image: less to patch (Trivy flags npm's own bundled deps) and
+# nothing for an attacker to install tools with.
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+    /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack \
+    /opt/yarn-* /usr/local/bin/yarn /usr/local/bin/yarnpkg
+
 ENV NODE_ENV=production \
     PORT=3001
 
@@ -51,8 +58,9 @@ COPY package.json ./
 LABEL org.opencontainers.image.source="https://github.com/princebabou/k8s-devops-lab"
 
 # Files stay owned by root and are only readable by the app user, so a
-# compromised process cannot rewrite its own code.
-USER node
+# compromised process cannot rewrite its own code. Numeric UID:GID (the image's
+# `node` user) lets Kubernetes' runAsNonRoot verify the user is not root.
+USER 1000:1000
 
 EXPOSE 3001
 # exec form: node is PID 1 and receives SIGTERM directly -> enableShutdownHooks()
