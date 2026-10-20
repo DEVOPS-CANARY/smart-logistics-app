@@ -124,7 +124,8 @@ jobs:
       matrix:
         app: [backend, frontend]
     env:
-      IMAGE: ghcr.io/${{ github.repository_owner }}/logistics-${{ matrix.app }}
+      # GHCR paths must be lowercase; github.repository_owner keeps the org's capitals.
+      IMAGE: ghcr.io/devops-canary/logistics-${{ matrix.app }}
       PUSH: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -198,9 +199,9 @@ jobs:
       group: gitops-uat
       cancel-in-progress: false # every deploy commit lands, in merge order
     env:
-      GITOPS_REPO: princebabou/k8s-devops-lab-gitops
+      GITOPS_REPO: DEVOPS-CANARY/GitOps-Repo
       GITOPS_FILE: apps/logistics/envs/uat/kustomization.yaml
-      REGISTRY_PREFIX: ghcr.io/${{ github.repository_owner }}/logistics
+      REGISTRY_PREFIX: ghcr.io/devops-canary/logistics
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:

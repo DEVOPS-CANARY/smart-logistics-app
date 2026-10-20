@@ -52,7 +52,7 @@ COPY --from=build /app/.next/static ./.next/static
 RUN mkdir -p .next/cache && chown 1000:1000 .next/cache
 
 # Links the image to its repo in GHCR (visibility, permissions, README).
-LABEL org.opencontainers.image.source="https://github.com/princebabou/k8s-devops-lab"
+LABEL org.opencontainers.image.source="https://github.com/DEVOPS-CANARY/smart-logistics-app"
 
 # Numeric UID:GID (the image's `node` user) lets Kubernetes' runAsNonRoot
 # verify the user is not root.
