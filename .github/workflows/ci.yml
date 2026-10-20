@@ -200,7 +200,7 @@ jobs:
       cancel-in-progress: false # every deploy commit lands, in merge order
     env:
       GITOPS_REPO: DEVOPS-CANARY/GitOps-Repo
-      GITOPS_FILE: apps/logistics/envs/uat/kustomization.yaml
+      GITOPS_FILE: apps/logistics/envs/uat/values.yaml
       REGISTRY_PREFIX: ghcr.io/devops-canary/logistics
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
