@@ -2,6 +2,11 @@
 # -> deploy to UAT on merges to develop. Promotion to staging and prod (the
 # same images, never rebuilt) is release.yml.
 #
+# Hotfix: a push to hotfix/<name> (branched from main) runs every gate, builds
+# the image and deploys it to the staging environment for testing; it never
+# goes through the staging branch. After the PR to main is merged, release.yml
+# takes that same image to prod. Then main is merged back into develop.
+#
 # Supply-chain rules for this file:
 # - Every action is pinned to a full commit SHA (tags can be repointed: see the
 #   March 2026 trivy-action compromise). The comment records the human version.
@@ -16,7 +21,7 @@ on:
   pull_request:
     branches: [develop, staging, main]
   push:
-    branches: [develop]
+    branches: [develop, "hotfix/**"]
   workflow_dispatch:
 
 permissions:
@@ -119,7 +124,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write # push to GHCR (used only on develop)
+      packages: write # push to GHCR (used only on develop and hotfix/* pushes)
     strategy:
       fail-fast: false
       matrix:
@@ -127,7 +132,8 @@ jobs:
     env:
       # GHCR paths must be lowercase; github.repository_owner keeps the org's capitals.
       IMAGE: ghcr.io/devops-canary/logistics-${{ matrix.app }}
-      PUSH: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
+      # develop, and hotfix branches (built from main, tested in staging)
+      PUSH: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/hotfix/')) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -200,6 +206,23 @@ jobs:
     with:
       env: uat
       environment: uat
+      image-from: commit
+    secrets:
+      GITOPS_DEPLOY_KEY: ${{ secrets.GITOPS_DEPLOY_KEY }}
+
+  # Hotfix: test the fix in the staging environment, never via the staging
+  # branch (which holds unreleased work). Prod then only accepts this digest.
+  deploy-staging-hotfix:
+    name: Staging (hotfix)
+    needs: image
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/hotfix/')
+    permissions:
+      contents: read
+      packages: read # resolve the digests of the images just pushed
+    uses: ./.github/workflows/gitops-deploy.yml
+    with:
+      env: staging
+      environment: staging
       image-from: commit
     secrets:
       GITOPS_DEPLOY_KEY: ${{ secrets.GITOPS_DEPLOY_KEY }}
