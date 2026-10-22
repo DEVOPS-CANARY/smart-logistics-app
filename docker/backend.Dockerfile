@@ -55,7 +55,7 @@ COPY --from=build /app/dist ./dist
 COPY package.json ./
 
 # Links the image to its repo in GHCR (visibility, permissions, README).
-LABEL org.opencontainers.image.source="https://github.com/princebabou/k8s-devops-lab"
+LABEL org.opencontainers.image.source="https://github.com/DEVOPS-CANARY/smart-logistics-app"
 
 # Files stay owned by root and are only readable by the app user, so a
 # compromised process cannot rewrite its own code. Numeric UID:GID (the image's

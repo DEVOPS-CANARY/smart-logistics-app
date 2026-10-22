@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ServiceStatusBadge from "./service-status-badge";
 
 type LandingHeroProps = {
   primaryHref: string;
@@ -16,6 +17,10 @@ export default function LandingHero({
       <div className="landing-glow -top-48 left-1/2 -translate-x-1/2" />
 
       <div className="relative z-10 mx-auto max-w-3xl text-center">
+        <div className="landing-animate-in mb-6">
+          <ServiceStatusBadge />
+        </div>
+
         <p className="landing-animate-in landing-label">
           Smart Logistics Platform
         </p>
