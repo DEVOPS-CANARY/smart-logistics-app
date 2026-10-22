@@ -386,15 +386,37 @@ npm run typecheck       # TypeScript compilation
 
 ### CI Pipeline
 
-The GitHub Actions workflow automatically runs on every push and pull request:
+`.github/workflows/ci.yml` runs on every pull request to `develop`, `staging` and `main`:
 
-| Step | Backend | Frontend |
-|------|---------|----------|
-| Format Check | Prettier | Prettier |
-| Lint | ESLint | ESLint |
-| Type Check | `tsc --noEmit` | `tsc --noEmit` |
-| Test | Jest (71+ tests) | Jest (27+ tests) |
-| Build | NestJS build | Next.js build |
+| Gate | Tool |
+|------|------|
+| Secret scan (whole history) | Gitleaks |
+| SAST | Semgrep |
+| Dependency vulnerabilities | Trivy (fs) |
+| Dockerfile lint | hadolint |
+| Format, lint, types, tests, build (backend and frontend) | Prettier, ESLint, `tsc`, Jest, Nest/Next build |
+
+On a merge to `develop` it also builds both images, scans them with Trivy, pushes
+them to GHCR tagged `sha-<commit>` and `tree-<content hash>`, and deploys them to UAT.
+
+### Delivery: UAT → Staging → Production
+
+The same images move through the environments; they are built once, on `develop`,
+and never rebuilt. CI never touches the cluster: each deploy is a commit of image
+digests to [GitOps-Repo](https://github.com/DEVOPS-CANARY/GitOps-Repo), and Argo CD
+rolls it out.
+
+| Environment | How it is deployed | Workflow |
+|---|---|---|
+| UAT | Merge a PR into `develop` | `ci.yml` |
+| Staging | Merge the PR `develop` → `staging` | `release.yml` |
+| Production | Merge the PR `staging` → `main`, then **Actions → Release → Run workflow** on `main`, and an approver approves the `production` deployment | `release.yml` |
+
+- Staging and production find the images by their `tree-` tag, so promotion PRs
+  must bring **exactly** what was built: use **Create a merge commit**, with no
+  other changes in the PR. Otherwise the workflow stops: *"No image …"*.
+- Production only accepts the digests Staging runs.
+- Rollback: `git revert` the deploy commit in GitOps-Repo.
 
 ---
 
