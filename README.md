@@ -416,6 +416,15 @@ rolls it out.
   must bring **exactly** what was built: use **Create a merge commit**, with no
   other changes in the PR. Otherwise the workflow stops: *"No image …"*.
 - Production only accepts the digests Staging runs.
+- **Hotfix** (an urgent fix without the unreleased work in `develop`/`staging`):
+  1. `git checkout -b hotfix/<name> origin/main`, fix, push, and open a PR to `main`.
+  2. CI runs every gate and deploys the hotfix to the **staging environment** (not the
+     `staging` branch) for testing.
+  3. Merge the PR, then **Release → Run workflow** on `main`, then approve. Prod gets
+     the image staging tested.
+  4. Merge `main` back into `develop` (PR), so the next release keeps the fix.
+     Forgetting this makes the next release fail with *"No image …"* rather than
+     silently undoing the fix.
 - Rollback: `git revert` the deploy commit in GitOps-Repo.
 
 ---
