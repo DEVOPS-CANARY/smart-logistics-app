@@ -25,6 +25,11 @@ export default function LandingHero({
           Smart Logistics Platform
         </p>
 
+        {/* Hotfix drill: stands in for an unfinished feature that must not reach prod. */}
+        <p className="mt-4 text-sm font-semibold text-amber-700">
+          NEW: Investment tracking (beta)
+        </p>
+
         <h1 className="landing-animate-in landing-animate-in-delay-1 landing-display mt-6 text-5xl leading-[1.05] text-slate-950 md:text-7xl">
           Shipment operations, simplified.
         </h1>
