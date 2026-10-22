@@ -50,7 +50,8 @@ jobs:
     env:
       GITOPS_REPO: DEVOPS-CANARY/GitOps-Repo
       GITOPS_FILE: apps/logistics/envs/${{ inputs.env }}/values.yaml
-      REGISTRY_PREFIX: ghcr.io/${{ github.repository_owner }}/logistics
+      # GHCR paths must be lowercase; github.repository_owner keeps the org's capitals.
+      REGISTRY_PREFIX: ghcr.io/devops-canary/logistics
       ENV_NAME: ${{ inputs.env }}
       IMAGE_FROM: ${{ inputs.image-from }}
       SAME_AS: ${{ inputs.same-as }}
