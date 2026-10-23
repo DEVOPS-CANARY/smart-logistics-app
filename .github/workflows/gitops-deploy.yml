@@ -107,7 +107,9 @@ jobs:
           for app in backend frontend; do
             want=$([ "$app" = backend ] && echo "$BACKEND" || echo "$FRONTEND")
             image="$REGISTRY_PREFIX-$app"
-            runs=$(grep -A1 -E "^ +repository: ${image//./\.}$" "$file" | grep -oE 'sha256:[0-9a-f]{64}' || true)
+            # Several components can use one image (the backend and its worker), so
+            # take the distinct digests: they must all be the same one.
+            runs=$(grep -A1 -E "^ +repository: ${image//./\.}$" "$file" | grep -oE 'sha256:[0-9a-f]{64}' | sort -u || true)
             if [ "$runs" != "$want" ]; then
               echo "::error::$SAME_AS runs $app ${runs:-<none>}, this release is $want. Merge the same content to $SAME_AS first and let it deploy there."
               exit 1
