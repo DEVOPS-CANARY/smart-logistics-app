@@ -20,6 +20,7 @@ describe("TrackingService", () => {
     const gateway: TrackingGateway = {
       emitShipmentUpdate: jest.fn()
     } as any;
+    const events = { publish: jest.fn().mockResolvedValue(undefined) } as any;
 
     const auditService = { log: jest.fn().mockResolvedValue(undefined) } as any;
     const accessControlService = {
@@ -32,7 +33,8 @@ describe("TrackingService", () => {
       prisma,
       gateway,
       auditService,
-      accessControlService
+      accessControlService,
+      events
     );
 
     const dto: CreateTrackingDto = {
@@ -63,6 +65,15 @@ describe("TrackingService", () => {
       note: dto.note,
       createdAt: new Date("2026-03-21T12:00:00.000Z")
     });
+    expect(events.publish).toHaveBeenCalledWith({
+      eventId: "t1",
+      shipmentId: "s1",
+      status: "IN_TRANSIT",
+      note: "On the way",
+      locationLat: dto.locationLat,
+      locationLng: dto.locationLng,
+      occurredAt: "2026-03-21T12:00:00.000Z"
+    });
   });
 
   it("create throws NotFoundException when COURIER is not assigned", async () => {
@@ -89,7 +100,8 @@ describe("TrackingService", () => {
       prisma,
       gateway,
       auditService,
-      accessControlService
+      accessControlService,
+      { publish: jest.fn().mockResolvedValue(undefined) } as any
     );
 
     const dto: CreateTrackingDto = {
@@ -127,7 +139,8 @@ describe("TrackingService", () => {
       prisma,
       gateway,
       auditService,
-      accessControlService
+      accessControlService,
+      { publish: jest.fn().mockResolvedValue(undefined) } as any
     );
 
     await expect(
@@ -163,7 +176,8 @@ describe("TrackingService", () => {
       prisma,
       gateway,
       auditService,
-      accessControlService
+      accessControlService,
+      { publish: jest.fn().mockResolvedValue(undefined) } as any
     );
 
     await expect(
@@ -196,7 +210,8 @@ describe("TrackingService", () => {
       prisma,
       gateway,
       auditService,
-      accessControlService
+      accessControlService,
+      { publish: jest.fn().mockResolvedValue(undefined) } as any
     );
 
     const result = await service.findByShipment("s1", {
@@ -240,7 +255,8 @@ describe("TrackingService", () => {
       prisma,
       gateway,
       auditService,
-      accessControlService
+      accessControlService,
+      { publish: jest.fn().mockResolvedValue(undefined) } as any
     );
 
     const result = await service.findByShipment("s1", {
@@ -286,7 +302,8 @@ describe("TrackingService", () => {
       prisma,
       gateway,
       auditService,
-      accessControlService
+      accessControlService,
+      { publish: jest.fn().mockResolvedValue(undefined) } as any
     );
 
     const result = service.findByShipment("s1", {
