@@ -73,7 +73,7 @@ export default function LoginPage() {
       sidePanel={
         <AuthSidePanel
           title="Welcome back"
-          subtitle="Sign in to continue managing your shipments and deliveries."
+          subtitle="Sign in to manage your shipments, deliveries and couriers."
         />
       }
       formPanel={
