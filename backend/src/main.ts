@@ -1,12 +1,14 @@
 import "./env/load-env";
 import "reflect-metadata";
-import { ValidationPipe } from "@nestjs/common";
+import { Logger, ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import helmet from "helmet";
 import { AppModule } from "./app.module";
 import { RequestLoggingInterceptor } from "./common/interceptors/request-logging.interceptor";
 import { GlobalExceptionFilter } from "./common/filters/global-exception.filter";
+import { RedisIoAdapter } from "./redis/redis-io.adapter";
+import { redisUrl } from "./redis/redis.config";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -55,6 +57,14 @@ async function bootstrap() {
       .build();
     const document = SwaggerModule.createDocument(app, swaggerConfig);
     SwaggerModule.setup("api/docs", app, document);
+  }
+
+  if (redisUrl()) {
+    app.useWebSocketAdapter(new RedisIoAdapter(app));
+  } else {
+    new Logger("Bootstrap").warn(
+      "REDIS_URL is not set: WebSocket events and rate limits stay in this process. Run a single replica."
+    );
   }
 
   app.enableShutdownHooks();
