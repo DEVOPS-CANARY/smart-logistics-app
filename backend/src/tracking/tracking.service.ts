@@ -4,6 +4,7 @@ import { AuditService } from "../audit/audit.service";
 import { AccessControlService } from "../auth/access-control.service";
 import { CreateTrackingDto } from "./dto/create-tracking.dto";
 import { TrackingGateway } from "./tracking.gateway";
+import { TrackingEventsPublisher } from "../kafka/tracking-events.publisher";
 
 const ALLOWED_STATUS_TRANSITIONS: Record<string, string[]> = {
   ASSIGNED: ["PICKED_UP"],
@@ -17,7 +18,8 @@ export class TrackingService {
     private readonly prisma: PrismaService,
     private readonly trackingGateway: TrackingGateway,
     private readonly auditService: AuditService,
-    private readonly accessControlService: AccessControlService
+    private readonly accessControlService: AccessControlService,
+    private readonly trackingEvents: TrackingEventsPublisher
   ) {}
 
   async create(
@@ -79,6 +81,17 @@ export class TrackingService {
       locationLng: dto.locationLng,
       note: dto.note,
       createdAt: tracking.createdAt
+    });
+
+    // For other services (e.g. notifications), through Kafka. Never throws.
+    await this.trackingEvents.publish({
+      eventId: tracking.id,
+      shipmentId,
+      status: dto.status,
+      note: dto.note,
+      locationLat: dto.locationLat,
+      locationLng: dto.locationLng,
+      occurredAt: tracking.createdAt.toISOString()
     });
 
     return tracking;
