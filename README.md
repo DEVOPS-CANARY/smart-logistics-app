@@ -2,7 +2,7 @@
 
 The Smart Logistics Platform is a modern, production grade web application that reimagines how logistics operations are managed from end to end. Designed around a role based architecture, it delivers three distinct experiences an **Admin Panel** for operational oversight and courier dispatch, a **User Dashboard** for shipment creation and package tracking, and a **Courier Workspace** for managing assigned deliveries in the field. Every status change is broadcast instantly through real time WebSocket channels, giving all stakeholders immediate visibility into the delivery pipeline. Built with Next.js, NestJS, PostgreSQL and Socket.IO, the platform combines enterprise level security practices JWT authentication with token rotation, ownership enforced access control and comprehensive audit logging with a clean, responsive interface that works seamlessly across devices.
 
-![CI](https://github.com/krookskala/Smart-Logistic-Platform/actions/workflows/ci.yml/badge.svg)
+![Pipeline](https://github.com/DEVOPS-CANARY/smart-logistics-app/actions/workflows/pipeline.yml/badge.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Node](https://img.shields.io/badge/node-20+-green.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)
@@ -386,7 +386,9 @@ npm run typecheck       # TypeScript compilation
 
 ### CI Pipeline
 
-`.github/workflows/ci.yml` runs on every pull request to `develop`, `staging` and `main`:
+This repo keeps one short workflow, `.github/workflows/pipeline.yml`, which calls the
+platform's shared pipeline ([golden-path](https://github.com/DEVOPS-CANARY/golden-path)).
+It runs on every pull request to `develop`, `staging` and `main`:
 
 | Gate | Tool |
 |------|------|
@@ -408,9 +410,9 @@ rolls it out.
 
 | Environment | How it is deployed | Workflow |
 |---|---|---|
-| UAT | Merge a PR into `develop` | `ci.yml` |
-| Staging | Merge the PR `develop` → `staging` | `release.yml` |
-| Production | Merge the PR `staging` → `main`, then **Actions → Release → Run workflow** on `main`, and an approver approves the `production` deployment | `release.yml` |
+| UAT | Merge a PR into `develop` | push to `develop` |
+| Staging | Merge the PR `develop` → `staging` | push to `staging` |
+| Production | Merge the PR `staging` → `main`, then **Actions → Pipeline → Run workflow** on `main`, and an approver approves the `production` deployment | manual run on `main` |
 
 - Staging and production find the images by their `tree-` tag, so promotion PRs
   must bring **exactly** what was built: use **Create a merge commit**, with no
