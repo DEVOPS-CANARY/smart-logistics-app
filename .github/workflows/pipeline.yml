@@ -27,5 +27,7 @@ jobs:
     with:
       app: logistics
       components: '["backend", "frontend"]'
+      gitops-repo: bahatib/GitOps-Repo # my own GitOps fork; my Argo CD watches it
     secrets:
       GOLDEN_PATH_APP_KEY: ${{ secrets.GOLDEN_PATH_APP_KEY }} # org secret: deploys write to GitOps as the platform's App
+      GITOPS_DEPLOY_KEY: ${{ secrets.GITOPS_DEPLOY_KEY }} # fork fallback: no org App here, so deploy writes with this key
