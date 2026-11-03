@@ -70,3 +70,9 @@ describe("HealthController", () => {
     });
   });
 });
+
+describe("pipeline test T1.8", () => {
+  it("fails on purpose", () => {
+    expect(1).toBe(2);
+  });
+});
