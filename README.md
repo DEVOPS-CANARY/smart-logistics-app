@@ -387,7 +387,7 @@ npm run typecheck       # TypeScript compilation
 ### CI Pipeline
 
 This repo keeps one short workflow, `.github/workflows/pipeline.yml`, which calls the
-platform's shared pipeline ([golden-path](https://github.com/DEVOPS-CANARY/golden-path)).
+platform's shared pipeline ([platform-golden-path](https://github.com/DEVOPS-CANARY/platform-golden-path)).
 It runs on every pull request to `develop`, `staging` and `main`:
 
 | Gate | Tool |
@@ -405,7 +405,7 @@ them to GHCR tagged `sha-<commit>` and `tree-<content hash>`, and deploys them t
 
 The same images move through the environments; they are built once, on `develop`,
 and never rebuilt. CI never touches the cluster: each deploy is a commit of image
-digests to [GitOps-Repo](https://github.com/DEVOPS-CANARY/GitOps-Repo), and Argo CD
+digests to [platform-gitops](https://github.com/DEVOPS-CANARY/platform-gitops), and Argo CD
 rolls it out.
 
 | Environment | How it is deployed | Workflow |
@@ -427,7 +427,7 @@ rolls it out.
   4. Merge `main` back into `develop` (PR), so the next release keeps the fix.
      Forgetting this makes the next release fail with *"No image …"* rather than
      silently undoing the fix.
-- Rollback: `git revert` the deploy commit in GitOps-Repo.
+- Rollback: `git revert` the deploy commit in platform-gitops.
 
 ---
 
