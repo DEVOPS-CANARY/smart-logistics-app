@@ -12,11 +12,11 @@
     "test": "npm --prefix backend run test && npm --prefix frontend run test"
   },
   "dependencies": {
-    "@nestjs/platform-socket.io": "^11.1.17",
-    "@nestjs/websockets": "^11.1.17",
+    "@nestjs/platform-socket.io": "11.1.17",
+    "@nestjs/websockets": "11.1.17",
     "socket.io": "^4.8.3"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "concurrently": "9.2.5"
   }
 }
