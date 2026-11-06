@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   pipeline:
-    uses: DEVOPS-CANARY/platform-golden-path/.github/workflows/pipeline.yml@v1
+    uses: DEVOPS-CANARY/platform-golden-path/.github/workflows/pipeline.yml@70dc5b41cc4c888bce4550e2ba44b16259d8e7fa # v1.9.1
     permissions:
       contents: read
       packages: write # push images to GHCR
